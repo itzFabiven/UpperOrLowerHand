@@ -12,7 +12,7 @@ Mazo::Mazo() {
 
 void Mazo::inicializarDobleBaraja() {
     std::vector<Carta> vectorCartas;
-    std::vector<std::string> palos = {"♥", "♠", "♦", "♣"};
+    std::vector<std::string> palos = {"Corazon", "Espada", "Diamante", "Trebol"};
     std::vector<std::pair<std::string, int>> valores = {
         {"A", 14}, {"K", 13}, {"Q", 12}, {"J", 11},
         {"10", 10}, {"9", 9}, {"8", 8}, {"7", 7},
