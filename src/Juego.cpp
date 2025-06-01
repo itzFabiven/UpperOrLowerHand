@@ -41,7 +41,6 @@ void Juego::jugarRonda() {
     int sumaIA = ia.sumarCartas();
 
     std::cout << "\n--- Resolucion de la ronda ---\n";
-    std::cout << "IA tenia: ";
     ia.mostrarCartas();
     std::cout << "Puntuacion IA: " << sumaIA << std::endl;
 

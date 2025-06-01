@@ -12,7 +12,7 @@ void Jugador::recibirCartas(Carta c1, Carta c2) {
 void Jugador::mostrarCartas() const {
     std::cout << nombre << " tiene: ";
     for (const auto& carta : mano) {
-        std::cout << carta.valor << carta.palo << " (" << carta.puntaje << ") ";
+        std::cout << carta.valor << " " << carta.palo << " (" << carta.puntaje << ") ";
     }
     std::cout << std::endl;
 }
