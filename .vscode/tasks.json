@@ -1,0 +1,56 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build sfml game",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-g", // Habilita la depuración
+
+                // Lista explícita de TODOS tus archivos .cpp en la carpeta src
+                "${workspaceFolder}\\src\\main.cpp",
+                "${workspaceFolder}\\src\\Juego.cpp",
+                "${workspaceFolder}\\src\\Jugador.cpp",
+                "${workspaceFolder}\\src\\Mano.cpp",
+                "${workspaceFolder}\\src\\Mazo.cpp",
+                "${workspaceFolder}\\src\\Carta.cpp", // Incluye Carta.cpp si lo creaste
+
+                // Ruta de salida del ejecutable (usando barras invertidas para Windows)
+                "-o",
+                "${workspaceFolder}\\output\\main.exe", // <--- ¡Esta línea fue modificada!
+
+                // Rutas a los encabezados y bibliotecas de SFML
+                "-I", "C:/SFML/include", // Ruta a los encabezados de SFML
+                "-I", "${workspaceFolder}\\src", // Ruta a tus propios archivos .h en 'src'
+
+                // Rutas a las bibliotecas de SFML
+                "-L", "C:/SFML/lib",
+
+                // Bibliotecas de SFML a enlazar (versión de depuración)
+                "-lsfml-graphics-d",
+                "-lsfml-window-d",
+                "-lsfml-system-d",
+                // Descomenta las siguientes líneas si usas módulos de audio o red
+                // "-lsfml-audio-d",
+                // "-lsfml-network-d",
+
+                // Dependencias adicionales del sistema Windows
+                "-lopengl32",
+                "-lwinmm",
+                "-lgdi32"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true // Hace que esta sea la tarea predeterminada
+            },
+            "detail": "Compila el proyecto de juego SFML"
+        }
+    ]
+}
