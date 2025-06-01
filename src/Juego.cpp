@@ -16,19 +16,19 @@ void Juego::jugarRonda() {
     historialManos.push({{j1, j2}, {ia1, ia2}});
 
     jugador.mostrarCartas();
-    std::cout << "Tu puntuación: " << jugador.sumarCartas() << std::endl;
+    std::cout << "Tu puntuacion: " << jugador.sumarCartas() << std::endl;
     std::cout << "Tienes " << jugador.getPuntos() << " puntos." << std::endl;
 
     int apuesta;
     do {
-        std::cout << "¿Cuántos puntos quieres apostar (1 a 3)? ";
+        std::cout << "Cuantos puntos quieres apostar (1 a 3)? ";
         std::cin >> apuesta;
     } while (apuesta < 1 || apuesta > 3 || apuesta > jugador.getPuntos());
     jugador.setApuesta(apuesta);
 
     std::string decision;
     do {
-        std::cout << "¿Tu mano es 'mayor' o 'menor' que la del oponente? ";
+        std::cout << "Tu mano es 'mayor' o 'menor' que la del oponente? ";
         std::cin >> decision;
     } while (decision != "mayor" && decision != "menor");
     jugador.setPrediccion(decision);
@@ -40,10 +40,10 @@ void Juego::jugarRonda() {
     int sumaJugador = jugador.sumarCartas();
     int sumaIA = ia.sumarCartas();
 
-    std::cout << "\n--- Resolución de la ronda ---\n";
-    std::cout << "IA tenía: ";
+    std::cout << "\n--- Resolucion de la ronda ---\n";
+    std::cout << "IA tenia: ";
     ia.mostrarCartas();
-    std::cout << "Puntuación IA: " << sumaIA << std::endl;
+    std::cout << "Puntuacion IA: " << sumaIA << std::endl;
 
     bool aciertoJugador = (decision == "mayor" && sumaJugador > sumaIA) ||
                           (decision == "menor" && sumaJugador < sumaIA);
@@ -59,7 +59,7 @@ void Juego::jugarRonda() {
     cartasDescartadas.push_back(ia2);
 
     std::cout << (aciertoJugador ? "Acertaste" : "Fallaste") << ". Tu puntaje ahora es: " << jugador.getPuntos() << std::endl;
-    std::cout << "IA " << (aciertoIA ? "acertó" : "falló") << ". Puntaje IA: " << ia.getPuntos() << "\n";
+    std::cout << "IA " << (aciertoIA ? "acerto" : "fallo") << ". Puntaje IA: " << ia.getPuntos() << "\n";
     std::cout << "-------------------------------\n";
 }
 
