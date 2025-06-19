@@ -1,21 +1,47 @@
+// src/Juego.h
 #pragma once
-#include "Mazo.h"
 #include "Jugador.h"
+#include "Mazo.h"
+#include "IA.h"
 #include <list>
-#include <stack>
 #include <utility>
+#include <vector>
 
 class Juego {
 private:
-    Mazo mazo;
     Jugador jugador;
     Jugador ia;
-
+    Mazo mazo;
     std::list<Carta> cartasDescartadas;
-    std::stack<std::pair<std::vector<Carta>, std::vector<Carta>>> historialManos;
+
+    int rondaActual;
+    bool partidaFinalizada;
+    std::string mensajeFinalPartida;
+    std::string mensajeRonda;
 
 public:
     Juego(std::string nombreJugador);
-    void jugarRonda();
-    void mostrarEstado() const;
+
+    void iniciarNuevaRonda();
+    void setApuestaJugador(int apuesta);
+    void setPrediccionJugador(const std::string& prediccion);
+    void resolverRonda();
+
+    int getPuntosJugador() const;
+    int getPuntosIA() const;
+    int getRondaActual() const;
+    const std::vector<Carta>& obtenerManoJugador() const;
+    const std::vector<Carta>& obtenerManoIA() const;
+    const std::string& getPrediccionIA() const;
+    int getApuestaIA() const;
+    bool isPartidaFinalizada() const;
+    std::string getMensajeFinalPartida() const;
+    void reiniciarJuego();
+
+    int obtenerManoJugadorSuma() const;
+    int obtenerManoIASuma() const; // <<< NUEVO: Para obtener la suma de la IA
+    std::string getMensajeRonda() const;
+
+private:
+    void verificarFinPartida();
 };

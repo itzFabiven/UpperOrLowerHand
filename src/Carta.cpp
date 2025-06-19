@@ -1,14 +1,6 @@
+// Carta.cpp
 #include "Carta.h"
 
-
-Carta::Carta(int valor, const std::string& palo)
-    : valor_(valor), palo_(palo)
-
-int Carta::obtenerValor() const {
-    return valor_;
-}
-
-// Implementación de la función obtenerPalo
-std::string Carta::obtenerPalo() const {
-    return palo_;
-}
+// Implementación del constructor de Carta
+Carta::Carta(std::string p, std::string v, int pts)
+    : palo(p), valor(v), puntaje(pts) {}

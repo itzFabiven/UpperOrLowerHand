@@ -4,14 +4,14 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:\\SFML\\include"
+                "C:/msys64/mingw64/include/**"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "C:\\msys64\\ucrt64\\bin\\gcc.exe",
+            "compilerPath": "C:\\msys64\\mingw64\\bin\\g++.exe",
             "cStandard": "c17",
             "cppStandard": "gnu++17",
             "intelliSenseMode": "windows-gcc-x64"
@@ -19,7 +19,8 @@
         {
             "name": "a",
             "includePath": [
-                "${workspaceFolder}/**"
+            "${workspaceFolder}/**",
+            "C:/msys64/mingw64/include/**" // O donde sea que tengas los includes de SFML
             ],
             "defines": [
                 "_DEBUG",

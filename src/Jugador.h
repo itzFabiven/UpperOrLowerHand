@@ -1,33 +1,33 @@
+// src/Jugador.h
 #pragma once
 #include "Carta.h"
 #include <vector>
 #include <string>
-#include <iostream>
 
 class Jugador {
 private:
     std::string nombre;
-    int puntos;
-    int apuesta;
-    std::string prediccion;
     std::vector<Carta> mano;
+    std::string prediccion;
+    int apuesta;
+    int puntos;
 
 public:
-    Jugador(std::string nombreInicial);
+    Jugador(std::string n);
 
     void recibirCartas(Carta c1, Carta c2);
-    void mostrarCartas() const;
     int sumarCartas() const;
+    void limpiarMano();
 
+    void setPrediccion(std::string p);
     void setApuesta(int a);
-    void setPrediccion(const std::string& p);
-    void ajustarPuntos(bool acierto);
+    void ajustarPuntos(bool acierta);
 
     int getPuntos() const;
+    const std::string& getNombre() const;
+    const std::vector<Carta>& getMano() const;
+    const std::string& getPrediccion() const;
     int getApuesta() const;
-    std::string getPrediccion() const;
-    std::string getNombre() const;
 
-    void limpiarMano();
+    int obtenerSumaMano() const; // <<< NUEVO: Para obtener la suma de la mano
 };
-

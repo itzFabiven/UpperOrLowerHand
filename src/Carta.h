@@ -1,12 +1,13 @@
+// Carta.h
 #pragma once
 #include <string>
 
 class Carta {
 public:
-    std::string palo;   // "♥", "♠", etc.
-    std::string valor;  // "A", "K", etc.
-    int puntaje;        // 2–14
+    std::string palo;    // "♥", "♠", "♦", "♣"
+    std::string valor;   // "A", "K", "Q", "J", "10", ..., "2"
+    int puntaje;         // 14 (A), 13 (K), ..., 2 (2)
 
-    Carta(std::string p = "", std::string v = "", int pts = 0)
-        : palo(p), valor(v), puntaje(pts) {}
+    // Constructor que inicializa los miembros
+    Carta(std::string p, std::string v, int pts);
 };

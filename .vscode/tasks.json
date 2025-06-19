@@ -2,50 +2,41 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build sfml test", // Etiqueta para esta tarea de compilación
+            "label": "build sfml",
             "type": "shell",
-            "command": "g++", // Comando del compilador
+            "command": "C:/msys64/mingw64/bin/g++.exe", // <--- RUTA CORRECTA AQUI
             "args": [
-                "-g", // Habilita la información de depuración
-
-                // Archivo fuente a compilar (¡SOLO sfml_test.cpp para esta prueba!)
-                "${workspaceFolder}\\src\\sfml_test.cpp",
-
-                // Ruta y nombre del ejecutable de salida
-                "-o",
-                "${workspaceFolder}\\output\\sfml_test.exe",
-
-                // Rutas a los directorios de inclusión (headers) de SFML
-                // Asegúrate que 'C:/SFML' sea la ruta correcta donde descomprimiste SFML
-                "-I", "C:/SFML/include",
-
-                // Rutas a los directorios de librerías de SFML
-                "-L", "C:/SFML/lib",
-
-                // Librerías de SFML a enlazar (versión de depuración - con '-d')
-                "-lsfml-graphics-d",
-                "-lsfml-window-d",
-                "-lsfml-system-d",
-                // Descomenta si usas los módulos de audio o red de SFML
-                // "-lsfml-audio-d",
-                // "-lsfml-network-d",
-
-                // Librerías del sistema Windows que SFML necesita
+                "-g",
+                "-std=c++17",
+                "${workspaceFolder}/src/*.cpp",
+                "-I", "C:/msys64/mingw64/include", // <--- RUTA CORRECTA AQUI
+                "-L", "C:/msys64/mingw64/lib",    // <--- RUTA CORRECTA AQUI
+                "-o", "${workspaceFolder}/output/UpperOrLowerHand.exe",
+                "-lsfml-graphics",
+                "-lsfml-window",
+                "-lsfml-system",
+                "-lsfml-audio",
+                "-lsfml-network",
                 "-lopengl32",
+                "-lws2_32",
                 "-lwinmm",
                 "-lgdi32"
             ],
-            "options": {
-                "cwd": "${workspaceFolder}" // Directorio de trabajo actual
-            },
-            "problemMatcher": [
-                "$gcc" // Para que VS Code interprete los errores de g++
-            ],
             "group": {
                 "kind": "build",
-                "isDefault": true // Hace que esta sea la tarea de compilación predeterminada
+                "isDefault": true
             },
-            "detail": "Compila el archivo de prueba SFML"
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Tarea de compilación para SFML con g++"
+        },
+        {
+            "label": "run sfml",
+            "type": "shell",
+            "command": "${workspaceFolder}/output/UpperOrLowerHand.exe",
+            "group": "test",
+            "problemMatcher": []
         }
     ]
 }

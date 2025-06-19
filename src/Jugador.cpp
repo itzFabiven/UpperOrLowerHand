@@ -1,7 +1,8 @@
+// src/Jugador.cpp
 #include "Jugador.h"
 
-Jugador::Jugador(std::string nombreInicial)
-    : nombre(nombreInicial), puntos(5), apuesta(1), prediccion("") {}
+Jugador::Jugador(std::string n) : nombre(n), puntos(10), apuesta(0) {
+}
 
 void Jugador::recibirCartas(Carta c1, Carta c2) {
     mano.clear();
@@ -9,36 +10,33 @@ void Jugador::recibirCartas(Carta c1, Carta c2) {
     mano.push_back(c2);
 }
 
-void Jugador::mostrarCartas() const {
-    std::cout << nombre << " tiene: ";
-    for (const auto& carta : mano) {
-        std::cout << carta.valor << " " << carta.palo << " (" << carta.puntaje << ") ";
+int Jugador::sumarCartas() const {
+    if (mano.size() == 2) {
+        return mano[0].puntaje + mano[1].puntaje;
     }
-    std::cout << std::endl;
+    return 0;
 }
 
-int Jugador::sumarCartas() const {
-    int total = 0;
-    for (const auto& carta : mano) {
-        total += carta.puntaje;
-    }
-    return total;
+void Jugador::limpiarMano() {
+    mano.clear();
+}
+
+void Jugador::setPrediccion(std::string p) {
+    prediccion = p;
 }
 
 void Jugador::setApuesta(int a) {
     apuesta = a;
 }
 
-void Jugador::setPrediccion(const std::string& p) {
-    prediccion = p;
-}
-
-void Jugador::ajustarPuntos(bool acierto) {
-    if (acierto) {
+void Jugador::ajustarPuntos(bool acierta) {
+    if (acierta) {
         puntos += apuesta;
     } else {
         puntos -= apuesta;
-        if (puntos < 0) puntos = 0;
+    }
+    if (puntos < 0) {
+        puntos = 0;
     }
 }
 
@@ -46,19 +44,26 @@ int Jugador::getPuntos() const {
     return puntos;
 }
 
+const std::string& Jugador::getNombre() const {
+    return nombre;
+}
+
+const std::vector<Carta>& Jugador::getMano() const {
+    return mano;
+}
+
+const std::string& Jugador::getPrediccion() const {
+    return prediccion;
+}
+
 int Jugador::getApuesta() const {
     return apuesta;
 }
 
-std::string Jugador::getPrediccion() const {
-    return prediccion;
+// <<< NUEVO: Definición de la función para obtener la suma
+int Jugador::obtenerSumaMano() const {
+    if (mano.size() == 2) {
+        return mano[0].puntaje + mano[1].puntaje;
+    }
+    return 0;
 }
-
-std::string Jugador::getNombre() const {
-    return nombre;
-}
-
-void Jugador::limpiarMano() {
-    mano.clear();
-}
-
