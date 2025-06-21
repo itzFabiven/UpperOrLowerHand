@@ -1,3 +1,9 @@
+Nombre: Fabian Andres Zeballos Cifuentes
+Rut: 21.459.647-4
+Carrera: Ingenieria Civil en Computacion e Informatica.
+
+
+---------------------------------------------------------------------------
 Reglas del Juego: Mayor o Menor
 Objetivo del Juego
 El objetivo es terminar la partida con más puntos que la IA. Para ganar puntos, deberás predecir si la suma de tus cartas es mayor o menor que la suma de las cartas del oponente en cada ronda. La partida consta de un máximo de 10 rondas.
@@ -33,7 +39,6 @@ La partida termina si ocurre una de estas dos cosas:
 
 Un jugador se queda sin puntos (su marcador llega a 0).
 Se completan las 10 rondas. En este caso, ¡gana el jugador que tenga más puntos!
-
 
 
 ----------- IMPORTANTE ----------------
