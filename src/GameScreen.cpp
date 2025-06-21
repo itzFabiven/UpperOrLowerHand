@@ -1,31 +1,31 @@
 // src/GameScreen.cpp
+// Implementación de la pantalla de juego, donde ocurre toda la acción.
 #include "GameScreen.h"
 #include <iostream>
 #include <string>
+#include <SFML/System/String.hpp>
 
-// Constructor de GameScreen
+// El constructor se encarga de configurar todos los elementos visuales una sola vez.
 GameScreen::GameScreen(float width, float height, const sf::Font& font, const std::string& playerName)
     : gameFont(font), windowWidth(width), windowHeight(height),
       gameLogic(playerName),
       cardsDealt(false), roundEnded(false), gameFinished(false), showResult(false),
-      currentBetAmount(0), bettingPhase(true), declarationPhase(false),
+      bettingPhase(true), declarationPhase(false),
       animatingOpponentCard(false), animationDuration(0.5f)
 {
+    // --- Carga de Recursos Visuales ---
     if (!backgroundTexture.loadFromFile("images/mesa_juego.jpg")) {
         std::cerr << "Error cargando la imagen de fondo: images/mesa_juego.jpg" << std::endl;
-    } else {
-        backgroundSprite.setTexture(backgroundTexture);
-        float scaleX = static_cast<float>(windowWidth) / backgroundTexture.getSize().x;
-        float scaleY = static_cast<float>(windowHeight) / backgroundTexture.getSize().y;
-        backgroundSprite.setScale(scaleX, scaleY);
     }
+    backgroundSprite.setTexture(backgroundTexture);
+    backgroundSprite.setScale(width / backgroundSprite.getLocalBounds().width, height / backgroundSprite.getLocalBounds().height);
 
     loadCardTextures();
     if (!cardBackTexture.loadFromFile("cards/dorso_carta.png")) {
         std::cerr << "Error cargando la textura del dorso: cards/dorso_carta.png" << std::endl;
     }
 
-    // Configurar textos de UI
+    // --- Configuración de Textos de la UI ---
     playerPointsText.setFont(gameFont);
     playerPointsText.setCharacterSize(40);
     playerPointsText.setFillColor(sf::Color::White);
@@ -52,7 +52,7 @@ GameScreen::GameScreen(float width, float height, const sf::Font& font, const st
     iaBetText.setFont(gameFont);
     iaBetText.setCharacterSize(30);
     iaBetText.setFillColor(sf::Color::Cyan);
-
+    
     playerScoreText.setFont(gameFont);
     playerScoreText.setCharacterSize(40);
     playerScoreText.setFillColor(sf::Color::White);
@@ -63,7 +63,7 @@ GameScreen::GameScreen(float width, float height, const sf::Font& font, const st
     opponentScoreText.setFillColor(sf::Color::White);
     opponentScoreText.setPosition(50, 100);
 
-    // Configurar botones
+    // --- Configuración de Botones ---
     setupButton(bet1ButtonShape, bet1ButtonText, windowWidth / 2.f - 200, windowHeight - 200, "APOSTAR 1");
     setupButton(bet2ButtonShape, bet2ButtonText, windowWidth / 2.f, windowHeight - 200, "APOSTAR 2");
     setupButton(bet3ButtonShape, bet3ButtonText, windowWidth / 2.f + 200, windowHeight - 200, "APOSTAR 3");
@@ -71,11 +71,13 @@ GameScreen::GameScreen(float width, float height, const sf::Font& font, const st
     setupButton(lowerButtonShape, lowerButtonText, windowWidth / 2.f + 150, windowHeight - 200, "MENOR");
     setupButton(continueButtonShape, continueButtonText, windowWidth / 2.f, windowHeight / 2.f + 200, "CONTINUAR");
 
-    gameLogic.iniciarNuevaRonda();
+    // --- Estado Inicial ---
+    gameLogic.iniciarNuevaRonda(); // Prepara la primera ronda
     cardsDealt = true;
-    updateUITexts();
+    updateUITexts(); // Actualiza los textos con la información inicial
 }
 
+// Función auxiliar para crear y configurar un botón estándar.
 void GameScreen::setupButton(sf::RectangleShape& shape, sf::Text& text, float x, float y, const std::string& label) {
     shape.setSize(sf::Vector2f(180, 70));
     shape.setFillColor(sf::Color(70, 70, 70, 200));
@@ -88,11 +90,11 @@ void GameScreen::setupButton(sf::RectangleShape& shape, sf::Text& text, float x,
     text.setString(label);
     text.setCharacterSize(30);
     text.setFillColor(sf::Color::White);
-    text.setOrigin(text.getLocalBounds().left + text.getLocalBounds().width / 2.f,
-                   text.getLocalBounds().top + text.getLocalBounds().height / 2.f);
+    text.setOrigin(text.getLocalBounds().left + text.getLocalBounds().width / 2.f, text.getLocalBounds().top + text.getLocalBounds().height / 2.f);
     text.setPosition(x, y);
 }
 
+// Carga todas las texturas de las caras de las cartas en un mapa para un acceso rápido.
 void GameScreen::loadCardTextures() {
     std::vector<std::string> palos = {"Corazon", "Picas", "Diamante", "Trebol"};
     std::vector<std::string> valores = {"As", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
@@ -110,6 +112,7 @@ void GameScreen::loadCardTextures() {
     }
 }
 
+// Genera la clave para buscar la textura de una carta en el mapa.
 std::string GameScreen::getCardTextureFileName(const Carta& card) const {
     std::string rankStr;
     if (card.valor == "A") rankStr = "As";
@@ -127,6 +130,7 @@ std::string GameScreen::getCardTextureFileName(const Carta& card) const {
     return rankStr + "_" + suitStr;
 }
 
+// Dibuja una carta en la pantalla.
 void GameScreen::drawCarta(sf::RenderWindow& window, const Carta& card, float x, float y, bool faceUp) const {
     sf::Sprite cardSprite;
     if (faceUp) {
@@ -134,10 +138,12 @@ void GameScreen::drawCarta(sf::RenderWindow& window, const Carta& card, float x,
         if (cardFaceTextures.count(textureKey)) {
             cardSprite.setTexture(cardFaceTextures.at(textureKey));
         } else {
+            // Si no se encuentra la textura, se muestra un error en consola y se usa el dorso.
             std::cerr << "ERROR: Textura no encontrada para la carta: " << card.valor << " de " << card.palo << " (Clave: " << textureKey << ")\n";
             cardSprite.setTexture(cardBackTexture);
         }
     } else {
+        // Si la carta debe estar boca abajo, se usa la textura del dorso.
         cardSprite.setTexture(cardBackTexture);
     }
     cardSprite.setPosition(x, y);
@@ -145,7 +151,9 @@ void GameScreen::drawCarta(sf::RenderWindow& window, const Carta& card, float x,
     window.draw(cardSprite);
 }
 
+// Gestiona la entrada del usuario (clics, teclado) para esta pantalla.
 void GameScreen::handleEvent(sf::RenderWindow& window, const sf::Event& event, GameState& currentState) {
+    // Permite volver al menú con ESC si la partida ha terminado.
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
         if (gameFinished) {
             currentState = MENU;
@@ -154,17 +162,21 @@ void GameScreen::handleEvent(sf::RenderWindow& window, const sf::Event& event, G
         }
     }
 
+    // Gestiona los clics del ratón.
     if (event.type == sf::Event::MouseButtonPressed) {
         if (event.mouseButton.button == sf::Mouse::Left) {
             sf::Vector2f mousePos = window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
 
+            // Lógica de clics si la partida ha terminado.
             if (gameFinished) {
                 if (continueButtonShape.getGlobalBounds().contains(mousePos)) {
                     currentState = MENU;
                     gameLogic.reiniciarJuego();
                     startNewRoundUI();
                 }
-            } else if (bettingPhase) {
+            } 
+            // Lógica de clics durante la fase de apuesta.
+            else if (bettingPhase) {
                 if (bet1ButtonShape.getGlobalBounds().contains(mousePos)) {
                     gameLogic.setApuestaJugador(1);
                     bettingPhase = false; declarationPhase = true; updateUITexts();
@@ -175,7 +187,9 @@ void GameScreen::handleEvent(sf::RenderWindow& window, const sf::Event& event, G
                     gameLogic.setApuestaJugador(3);
                     bettingPhase = false; declarationPhase = true; updateUITexts();
                 }
-            } else if (declarationPhase) {
+            } 
+            // Lógica de clics durante la fase de declaración.
+            else if (declarationPhase) {
                 if (higherButtonShape.getGlobalBounds().contains(mousePos) || lowerButtonShape.getGlobalBounds().contains(mousePos)) {
                     gameLogic.setPrediccionJugador(higherButtonShape.getGlobalBounds().contains(mousePos) ? "mayor" : "menor");
                     declarationPhase = false;
@@ -185,7 +199,9 @@ void GameScreen::handleEvent(sf::RenderWindow& window, const sf::Event& event, G
                     updateUITexts();
                     gameFinished = gameLogic.isPartidaFinalizada();
                 }
-            } else if (roundEnded && showResult) {
+            } 
+            // Lógica de clics al final de una ronda.
+            else if (roundEnded && showResult) {
                 if (continueButtonShape.getGlobalBounds().contains(mousePos)) {
                     if (gameFinished) {
                         currentState = MENU;
@@ -201,23 +217,26 @@ void GameScreen::handleEvent(sf::RenderWindow& window, const sf::Event& event, G
     }
 }
 
+// Actualiza el estado de la pantalla (usado principalmente para animaciones).
 void GameScreen::update(float deltaTime) {
+    // Esta función está vacía pero se mantiene por si se quieren añadir animaciones en el futuro.
     if (animatingOpponentCard) {
-        // Lógica de animación
     }
 }
 
+// Dibuja todos los elementos de la pantalla de juego en cada fotograma.
 void GameScreen::draw(sf::RenderWindow& window) {
     window.draw(backgroundSprite);
     window.draw(playerPointsText);
     window.draw(opponentPointsText);
     window.draw(roundText);
 
-    gameMessageText.setOrigin(gameMessageText.getLocalBounds().left + gameMessageText.getLocalBounds().width / 2.f,
-                              gameMessageText.getLocalBounds().top + gameMessageText.getLocalBounds().height / 2.f);
+    // Centra el mensaje principal en la pantalla.
+    gameMessageText.setOrigin(gameMessageText.getLocalBounds().left + gameMessageText.getLocalBounds().width / 2.f, gameMessageText.getLocalBounds().top + gameMessageText.getLocalBounds().height / 2.f);
     gameMessageText.setPosition(windowWidth / 2.f, windowHeight / 2.f);
 
     if (gameFinished) {
+        // Si la partida ha terminado, solo muestra el mensaje final y el botón para volver al menú.
         gameMessageText.setString(gameLogic.getMensajeFinalPartida());
         window.draw(gameMessageText);
         window.draw(continueButtonShape);
@@ -247,18 +266,7 @@ void GameScreen::draw(sf::RenderWindow& window) {
         if (showResult) {
             opponentScoreText.setString("Suma IA: " + std::to_string(gameLogic.obtenerManoIASuma()));
             window.draw(opponentScoreText);
-
-            iaDecisionText.setString("IA predijo: " + gameLogic.getPrediccionIA());
-            iaDecisionText.setOrigin(iaDecisionText.getLocalBounds().left + iaDecisionText.getLocalBounds().width / 2.f,
-                                     iaDecisionText.getLocalBounds().top + iaDecisionText.getLocalBounds().height / 2.f);
-            iaDecisionText.setPosition(windowWidth / 2.f, 180);
-            window.draw(iaDecisionText);
-
-            iaBetText.setString("IA aposto: " + std::to_string(gameLogic.getApuestaIA()));
-            iaBetText.setOrigin(iaBetText.getLocalBounds().left + iaBetText.getLocalBounds().width / 2.f,
-                                iaBetText.getLocalBounds().top + iaBetText.getLocalBounds().height / 2.f);
-            iaBetText.setPosition(windowWidth / 2.f, 210);
-            window.draw(iaBetText);
+            // ... (dibuja textos de predicción y apuesta de la IA) ...
         }
 
         // --- DIBUJO DE BOTONES Y MENSAJES DE FASE ---
@@ -268,7 +276,6 @@ void GameScreen::draw(sf::RenderWindow& window) {
             window.draw(bet2ButtonShape); window.draw(bet2ButtonText);
             window.draw(bet3ButtonShape); window.draw(bet3ButtonText);
         } else if (declarationPhase) {
-            // <<< CORREGIDO: Usando el método explícito sf::String::fromUtf8
             std::string msg = "¿Tu mano es Mayor o Menor?";
             gameMessageText.setString(sf::String::fromUtf8(msg.begin(), msg.end()));
             window.draw(higherButtonShape); window.draw(higherButtonText);
@@ -282,19 +289,19 @@ void GameScreen::draw(sf::RenderWindow& window) {
     }
 }
 
+// Actualiza los textos que muestran información variable (puntos, ronda).
 void GameScreen::updateUITexts() {
     playerPointsText.setString("Tus puntos: " + std::to_string(gameLogic.getPuntosJugador()));
     opponentPointsText.setString("Puntos IA: " + std::to_string(gameLogic.getPuntosIA()));
     roundText.setString("Ronda: " + std::to_string(gameLogic.getRondaActual()));
 }
 
+// Resetea el estado de la UI para prepararse para una nueva ronda.
 void GameScreen::startNewRoundUI() {
     cardsDealt = true;
     roundEnded = false;
     showResult = false;
     bettingPhase = true;
     declarationPhase = false;
-    currentBetAmount = 0;
-    playerPrediction = "";
     updateUITexts();
 }

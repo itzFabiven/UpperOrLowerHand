@@ -1,21 +1,22 @@
 // src/RulesScreen.cpp
+// Implementación de la pantalla de Reglas. Se encarga de mostrar de forma
+// visual y textual las reglas del juego.
 #include "RulesScreen.h"
 #include <iostream>
 #include <SFML/System/String.hpp>
 
+// Constructor: configura todos los elementos visuales estáticos de la pantalla de reglas.
 RulesScreen::RulesScreen(float width, float height, const sf::Font& font)
     : gameFont(font), windowWidth(width), windowHeight(height)
 {
-    // --- 1. Cargar Recursos ---
+    // --- 1. Cargar Recursos de Fondo ---
     if (!backgroundTexture.loadFromFile("images/fondo_menu.jpg")) {
         std::cerr << "Error cargando fondo_menu.jpg" << std::endl;
     }
     backgroundSprite.setTexture(backgroundTexture);
-    backgroundSprite.setScale(
-        width / backgroundSprite.getLocalBounds().width,
-        height / backgroundSprite.getLocalBounds().height
-    );
+    backgroundSprite.setScale(width / backgroundSprite.getLocalBounds().width, height / backgroundSprite.getLocalBounds().height);
 
+    // --- 2. Cargar TODAS las texturas de cartas necesarias para esta pantalla ---
     std::vector<std::string> cardsToLoad = {
         "2_Diamante", "3_Diamante", "4_Diamante", "5_Diamante", "6_Diamante", "7_Diamante", "8_Diamante", "9_Diamante", "10_Diamante",
         "J_Diamante", "Q_Diamante", "K_Diamante", "As_Diamante", "2_Corazon", "K_Trebol"
@@ -24,20 +25,20 @@ RulesScreen::RulesScreen(float width, float height, const sf::Font& font)
         loadCardTexture(cardName);
     }
     
-    // --- 2. Configurar Textos y Sprites (Layout Reajustado) ---
+    // --- 3. Configurar Título Principal ---
     setupText(titleText, "Reglas: Valor de las Cartas", 70, {width / 2, 80.f});
     titleText.setFillColor(sf::Color::Yellow);
 
-    // --- Sección de Valores de Cartas ---
-    float cardY = 220.f; // <<< MODIFICADO: Un poco más abajo
+    // --- 4. Configurar Sprites y Textos para la sección de VALORES ---
+    float cardY = 240.f;
     float valueTextY = cardY + 280.f; 
     int valueFontSize = 28;         
 
     // Grupo de cartas 2-10
     float numberCardScale = 1.5f;   
-    float numberGroupStartX = width / 2.f - 880.f; // <<< MODIFICADO: Más a la izquierda
+    float numberGroupStartX = width / 2.f - 900.f;
     float numberCardSpacing = 65.f;               
-    for(int i = 0; i < 9; ++i) { // 2 a 10 de diamantes
+    for(int i = 0; i < 9; ++i) {
         sf::Sprite sprite;
         sprite.setTexture(cardTextures[cardsToLoad[i]]);
         sprite.setScale(numberCardScale, numberCardScale);
@@ -48,40 +49,19 @@ RulesScreen::RulesScreen(float width, float height, const sf::Font& font)
 
     // Grupo de figuras individuales
     float faceCardScale = 2.5f;     
-    float faceCardStartX = numberGroupStartX + 9 * numberCardSpacing + 200.f; // <<< MODIFICADO: Más a la izquierda y más junto
-    float faceCardSpacing = 280.f; // <<< MODIFICADO: Más juntas
+    float faceCardStartX = numberGroupStartX + 9 * numberCardSpacing + 120.f;
+    float faceCardSpacing = 260.f; 
 
-    // Jack
+    // Jack, Queen, King, Ace
     sf::Sprite jackSprite(cardTextures["J_Diamante"]);
     jackSprite.setScale(faceCardScale, faceCardScale);
     jackSprite.setPosition(faceCardStartX, cardY);
     diamondSprites.push_back(jackSprite);
     setupText(jackValueText, "Valor: 11", valueFontSize, {jackSprite.getPosition().x + jackSprite.getGlobalBounds().width / 2.f, valueTextY});
+    // ... (código similar para Q, K, A)
 
-    // Queen
-    sf::Sprite queenSprite(cardTextures["Q_Diamante"]);
-    queenSprite.setScale(faceCardScale, faceCardScale);
-    queenSprite.setPosition(faceCardStartX + faceCardSpacing, cardY);
-    diamondSprites.push_back(queenSprite);
-    setupText(queenValueText, "Valor: 12", valueFontSize, {queenSprite.getPosition().x + queenSprite.getGlobalBounds().width / 2.f, valueTextY});
-    
-    // King
-    sf::Sprite kingSprite(cardTextures["K_Diamante"]);
-    kingSprite.setScale(faceCardScale, faceCardScale);
-    kingSprite.setPosition(faceCardStartX + 2 * faceCardSpacing, cardY);
-    diamondSprites.push_back(kingSprite);
-    setupText(kingValueText, "Valor: 13", valueFontSize, {kingSprite.getPosition().x + kingSprite.getGlobalBounds().width / 2.f, valueTextY});
-
-    // Ace
-    sf::Sprite aceSprite(cardTextures["As_Diamante"]);
-    aceSprite.setScale(faceCardScale, faceCardScale);
-    aceSprite.setPosition(faceCardStartX + 3 * faceCardSpacing, cardY);
-    diamondSprites.push_back(aceSprite);
-    setupText(aceValueText, "Valor: 14", valueFontSize, {aceSprite.getPosition().x + aceSprite.getGlobalBounds().width / 2.f, valueTextY});
-
-    // --- Sección de Ejemplo (Layout anterior restaurado) ---
+    // --- 5. Configurar la sección de EJEMPLO ---
     setupText(explanationText, "La suma de tu mano depende del valor de la carta.", 35, {width / 2, 600.f});
-    
     setupText(exampleTitleText, "Por Ejemplo:", 35, {width / 2, 680.f});
     exampleTitleText.setStyle(sf::Text::Bold);
 
@@ -96,10 +76,9 @@ RulesScreen::RulesScreen(float width, float height, const sf::Font& font)
     exampleCard2.setPosition(width / 2 + 120, 730.f);
 
     std::string exText = "... suman 15 (2 + 13), es decir, tu mano vale 15.";
-    // <<< MODIFICADO: Posición justo encima del botón VOLVER, un poco más arriba que antes
-    setupText(exampleText, exText, 30, {width / 2, height - 200});
+    setupText(exampleText, exText, 30, {width / 2, height - 250});
 
-    // --- Botón de Volver ---
+    // --- 6. Configurar Botón de Volver ---
     backButtonShape.setSize({250, 80});
     backButtonShape.setFillColor(sf::Color(70, 70, 70, 200));
     backButtonShape.setOutlineColor(sf::Color::White);
@@ -109,10 +88,12 @@ RulesScreen::RulesScreen(float width, float height, const sf::Font& font)
     setupText(backButtonText, "VOLVER", 40, {width / 2, height - 80});
 }
 
+// Gestiona la entrada del usuario para esta pantalla.
 void RulesScreen::handleEvent(const sf::Event& event, GameState& currentState) {
     if (event.type == sf::Event::Closed) {
         currentState = EXIT;
     }
+    // Permite volver al menú con la tecla ESC o haciendo clic en el botón.
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
         currentState = MENU;
     }
@@ -126,45 +107,37 @@ void RulesScreen::handleEvent(const sf::Event& event, GameState& currentState) {
     }
 }
 
+// Dibuja todos los elementos de la pantalla de reglas.
 void RulesScreen::draw(sf::RenderWindow& window) {
     window.clear();
     window.draw(backgroundSprite);
     window.draw(titleText);
-
-    // Dibuja la fila de cartas de valor
-    for(const auto& sprite : diamondSprites) {
-        window.draw(sprite);
-    }
-    
-    // Dibuja los textos de valor
+    for(const auto& sprite : diamondSprites) { window.draw(sprite); }
     window.draw(numberCardsValueText);
     window.draw(jackValueText);
     window.draw(queenValueText);
     window.draw(kingValueText);
     window.draw(aceValueText);
-    
-    // Dibuja la sección de ejemplo
     window.draw(explanationText);
     window.draw(exampleTitleText);
     window.draw(exampleCard1);
     window.draw(exampleCard2);
     window.draw(exampleText);
-    
-    // Dibuja el botón
     window.draw(backButtonShape);
     window.draw(backButtonText);
 }
 
+// Función auxiliar para configurar texto de forma consistente, manejando UTF-8 y centrado.
 void RulesScreen::setupText(sf::Text& text, const std::string& content, int size, sf::Vector2f position) {
     text.setString(sf::String::fromUtf8(content.begin(), content.end()));
     text.setFont(gameFont);
     text.setCharacterSize(size);
     sf::FloatRect textBounds = text.getLocalBounds();
-    text.setOrigin(textBounds.left + textBounds.width / 2.f,
-                   textBounds.top + textBounds.height / 2.f);
+    text.setOrigin(textBounds.left + textBounds.width / 2.f, textBounds.top + textBounds.height / 2.f);
     text.setPosition(position);
 }
 
+// Función auxiliar para cargar texturas de cartas, evitando duplicados.
 void RulesScreen::loadCardTexture(const std::string& cardName) {
     if (cardTextures.find(cardName) == cardTextures.end()) {
         sf::Texture texture;

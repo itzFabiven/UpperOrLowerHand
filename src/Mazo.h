@@ -1,26 +1,50 @@
 // src/Mazo.h
+// Define la clase Mazo, que gestiona la baraja de cartas del juego.
+// Utiliza una pila (stack) para simular el comportamiento de sacar cartas de la parte superior.
 #pragma once
 #include "Carta.h"
-#include <stack>     // Para usar std::stack como estructura del mazo
-#include <vector>    // Para el vector temporal al inicializar/barajar
-#include <algorithm> // Para std::shuffle
-#include <random>    // Para std::default_random_engine
-#include <chrono>    // Para std::chrono::system_clock::now().time_since_epoch().count() como seed
+#include <stack>
+#include <vector>
+#include <algorithm>
+#include <random>
+#include <chrono>
 
 class Mazo {
 private:
-    std::stack<Carta> cartas; // El mazo como una pila (LIFO)
+    std::stack<Carta> cartas; // Pila de cartas que representa el mazo.
 
 public:
-    Mazo(); // Constructor que inicializa y baraja el mazo
+    /**
+     * Constructor de la clase Mazo.
+     * Al crearse, automáticamente inicializa y baraja una doble baraja.
+     */
+    Mazo();
 
-    void inicializarDobleBaraja(); // Llena el mazo con dos barajas estándar
-    void barajar();                // Baraja las cartas del mazo actual (si no está vacío)
-    Carta sacarCarta();            // Saca la carta superior del mazo
+    /**
+     * (Re)llena el mazo con una doble baraja estándar (104 cartas) y la baraja.
+     */
+    void inicializarDobleBaraja();
 
-    bool estaVacio() const;       // Verifica si el mazo está vacío
-    int cantidadCartas() const;   // Devuelve la cantidad de cartas en el mazo
+    /**
+     * Baraja las cartas que se encuentran actualmente en el mazo.
+     */
+    void barajar();
 
-    // No se necesita devolverCarta en este modelo donde las descartadas no vuelven al mazo activo.
-    // void devolverCarta(const Carta& carta);
+    /**
+     * Saca la carta superior del mazo y la devuelve.
+     * La carta de la parte superior del mazo.
+     */
+    Carta sacarCarta();
+
+    /**
+     * Comprueba si el mazo está vacío.
+     * true si el mazo no tiene cartas, false en caso contrario.
+     */
+    bool estaVacio() const;
+
+    /**
+     * Devuelve el número de cartas restantes en el mazo.
+     * La cantidad de cartas.
+     */
+    int cantidadCartas() const;
 };

@@ -1,31 +1,38 @@
 // src/main.cpp
+// Punto de entrada principal de la aplicación.
+// Se encarga de crear la ventana, gestionar los estados del juego (Menú, Juego, Reglas)
+// y contiene el bucle principal que actualiza y dibuja cada fotograma.
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include "Menu.h"
 #include "GameScreen.h"
-#include "RulesScreen.h" // <<< NUEVO
+#include "RulesScreen.h"
 #include "GameState.h"
 
 int main() {
+    // --- Configuración Inicial de la Ventana ---
     const unsigned int windowWidth = 1920;
     const unsigned int windowHeight = 1080;
 
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Juego de Cartas: Mayor o Menor");
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(60); // Limitar a 60 FPS para un rendimiento estable
 
+    // --- Carga de Recursos Globales (Fuentes y Música) ---
     sf::Font font;
     if (!font.loadFromFile("fonts/times.ttf")) {
         std::cerr << "Error cargando la fuente: fonts/times.ttf" << std::endl;
         return -1;
     }
 
+    // Creación de los objetos para cada pantalla del juego
     std::string playerName = "Jugador";
-
     Menu menu(windowWidth, windowHeight, font);
     GameScreen gameScreen(windowWidth, windowHeight, font, playerName);
-    RulesScreen rulesScreen(windowWidth, windowHeight, font); // <<< NUEVO
+    RulesScreen rulesScreen(windowWidth, windowHeight, font);
 
+    // Carga y configuración de la música de fondo
     sf::Music menuMusic;
     if (!menuMusic.openFromFile("audio/menu_song.ogg")) {
         std::cerr << "Error al cargar audio/menu_song.ogg" << std::endl;
@@ -40,21 +47,26 @@ int main() {
     gameMusic.setLoop(true);
     gameMusic.setVolume(50);
 
+    // --- Variables de Estado del Juego ---
+    GameState currentState = MENU; // El juego siempre empieza en el menú principal
+
+    // Estado para controlar la música y evitar reiniciarla en cada fotograma
     enum MusicState { MUSIC_NONE, MUSIC_MENU, MUSIC_GAME };
     MusicState currentMusicState = MUSIC_NONE;
 
-    GameState currentState = MENU;
+    sf::Clock clock; // Reloj para controlar el tiempo delta (para animaciones futuras)
 
-    sf::Clock clock;
-
+    // --- Bucle Principal del Juego ---
+    // Este bucle se ejecuta continuamente mientras la ventana esté abierta.
     while (window.isOpen()) {
         sf::Event event;
+        // Bucle de gestión de eventos (input del usuario)
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 window.close();
             }
 
-            // <<< CORREGIDO: Se añade el caso para RULES
+            // Se delega el manejo de eventos a la pantalla activa
             switch (currentState) {
                 case MENU:
                     menu.handleEvent(event, currentState);
@@ -62,7 +74,7 @@ int main() {
                 case GAME:
                     gameScreen.handleEvent(window, event, currentState);
                     break;
-                case RULES: 
+                case RULES:
                     rulesScreen.handleEvent(event, currentState);
                     break;
                 case OPTIONS:
@@ -81,7 +93,7 @@ int main() {
             }
         }
         
-        // <<< CORREGIDO: Se añade RULES al control de música
+        // Lógica para controlar qué música debe sonar según el estado del juego
         switch (currentState) {
             case MENU:
             case RULES:
@@ -106,21 +118,24 @@ int main() {
                 break;
         }
 
-        window.clear();
+        // --- Ciclo de Dibujado ---
+        window.clear(); // Limpia la pantalla del fotograma anterior
+
         float deltaTime = clock.restart().asSeconds();
 
-        // <<< CORREGIDO: Se añade el caso para dibujar la pantalla de reglas
+        // Se dibuja la pantalla que corresponda al estado actual
         switch (currentState) {
             case MENU:
                 menu.draw(window);
                 break;
             case GAME:
-                gameScreen.update(deltaTime);
-                gameScreen.draw(window);
+                gameScreen.update(deltaTime); // Actualiza la lógica de la pantalla
+                gameScreen.draw(window);      // Dibuja la pantalla
                 break;
             case RULES:
                 rulesScreen.draw(window);
                 break;
+            // Pantallas simples para Opciones y Créditos
             case OPTIONS: {
                 std::string msg = "Opciones\n(Presiona ESC para volver)";
                 sf::Text optionsText(sf::String::fromUtf8(msg.begin(), msg.end()), font, 50);
@@ -141,7 +156,7 @@ int main() {
                 break;
         }
 
-        window.display();
+        window.display(); // Muestra en pantalla todo lo que se ha dibujado
     }
 
     return 0;
